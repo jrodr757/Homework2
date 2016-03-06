@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": false,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noEmitHelpers": false,
+    "sourceMap": true,
+    "outDir": "js"
+  },
+  "filesGlob": [
+    "./**/*.ts",
+    "./test/**/*.ts",
+    "!./jspm_packages/**/*.ts",
+    "!./node_modules/**/*.ts",
+    "!./typings/**/*.ts",
+    "./typings/main.d.ts"
+  ],
+  "compileOnSave": true,
+  "buildOnSave": true,
+  "atom": {
+    "rewriteTsconfig": true
+  },
+  "files": [
+    "./chat-commands.ts",
+    "./chat-session.ts",
+    "./server.ts",
+    "./typings/main.d.ts"
+  ]
+}
