@@ -1,37 +1,24 @@
-/**
- * Sockets Chat App
- * By Francisco Ortega (http://franciscoraulortega.com/), Alain Galvan (https://Alain.xyz)
- * Visit the page, and you'll be given a unique id and a default username you can rename with /nick <newname>
- * All previous messages in the chat are saved on the server.
- */
+// Requires
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-import * as Express from 'express';
-import * as Http from 'http';
-import * as Sockets from 'socket.io';
-
-import chatSession from './chat-session';
-import Commands from './chat-commands';
-
-var app = Express();
-var http = Http.createServer(app);
-var io = Sockets(http);
-
-var commands = Commands(io, chatSession);
+var chatSession = require('./chat-session');
+var commands = require('./chat-commands')(io, chatSession);
 
 // Routes
-// Route all static files from the current directory + /public
-// Route /chatapp to curdir + public/index.html
-app.use(Express.static(__dirname + '/public'));
-app.get('/chatapp', (req, res) => {
+app.use(express.static(__dirname + '/public'));
+
+app.get('/chatapp', function(req, res) {
   res.sendFile(__dirname + '/public/index.html');
 });
 
 // Sockets
-io.on('connection', (socket) => {
+io.on('connection', function(socket) {
+  var player = {};
 
-  var player;
-
-  socket.on('register', (uuid) => {
+  socket.on('register', function(uuid) {
     if (!(player = chatSession.players[uuid])) {
       chatSession.count++;
       player = chatSession.players[uuid] = {
@@ -60,9 +47,7 @@ io.on('connection', (socket) => {
     chatSession.players[uuid] = player;
   });
 
-
-
-  socket.on('disconnect', (type) => {
+  socket.on('disconnect', function(type) {
     // Don't disconnect player in-game
     if (type == 'booted' && player.tabs > 0)
       return;
@@ -77,20 +62,17 @@ io.on('connection', (socket) => {
     }, 2000);
   });
 
-
   socket.on('message', function(msg) {
     if (!commands.isCommand(msg)) {
       var out = player.nick + ': ' + msg;
       io.emit('message', out);
       chatSession.log += out + "\n";
+      console.log(out);
     } else
       commands.run(player, msg);
   });
-
 });
 
-
-// Start App
-var port = 8082;
-http.listen(port);
-console.log('Chat App Online @ localhost:' + port);
+http.listen(3000, function(){
+  console.log('Chat App Online @ localhost: 3000');
+});
