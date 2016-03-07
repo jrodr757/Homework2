@@ -1,2 +1,0 @@
-Welcome to the chat program. You may request a change of nick with /nick [nickname].
-For additional commands, type /help
